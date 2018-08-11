@@ -12,22 +12,67 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = 'net.brainage.example'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
 	mavenCentral()
 }
 
-
 dependencies {
+    // spring
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compileOnly('org.springframework.boot:spring-boot-configuration-processor')
+    runtime('org.springframework.boot:spring-boot-devtools')
+
+    // mybatis
+    compile('org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.2')
+    runtime('mysql:mysql-connector-java')
+    runtime('com.h2database:h2')
+
+    // guava
+    compile 'com.google.guava:guava:26.0-jre'
+
+    // lombok
 	compileOnly('org.projectlombok:lombok')
+
+    // test
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+processResources {
+    exclude '**/*.yml'
+    exclude '**/*.yaml'
+    exclude '**/logback-spring.xml'
+    exclude '**/*.property'
+}
+
+task packageConfig(type: Tar) {
+    classifier = 'config'
+    extension = 'tar.gz'
+    destinationDir = file("${buildDir}/libs")
+
+    from('src/main/resources') {
+        include '**/*.yml'
+        include '**/*.yaml'
+        include '**/*.properties'
+        include '**/logback.xml'
+    }
+
+    doLast {
+        println archiveName
+        println relativePath(destinationDir)
+        println relativePath(archivePath)
+    }
+}
+
+artifacts {
+	archives packageConfig
 }
