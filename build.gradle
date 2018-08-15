@@ -3,10 +3,15 @@ buildscript {
 		springBootVersion = '2.0.4.RELEASE'
 	}
 	repositories {
+        mavenLocal()
 		mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.5.1"
 	}
 }
 
@@ -15,6 +20,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: "com.gorylenko.gradle-git-properties"
 
 group = 'net.brainage.example'
 version = '0.0.1-SNAPSHOT'
@@ -22,6 +28,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
+    mavenLocal()
 	mavenCentral()
 }
 
@@ -45,6 +52,15 @@ dependencies {
 
     // test
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+bootJar {
+    classifier = 'exec'
+    launchScript()
+}
+
+springBoot {
+    buildInfo()
 }
 
 processResources {
